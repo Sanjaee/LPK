@@ -10,6 +10,10 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
 import { getProgramBySlug, getLandingData } from "@/lib/services/landing";
 import { formatIDR } from "@/lib/format";
+import { IMAGES } from "@/lib/images";
+import { db } from "@/db";
+import { jobCategories } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const dynamicParams = false;
 
@@ -50,6 +54,14 @@ export default async function ProgramPage({
     );
   }
 
+  const category = program.categoryId
+    ? await db
+        .select({ name: jobCategories.name })
+        .from(jobCategories)
+        .where(eq(jobCategories.id, program.categoryId))
+        .then((r) => r[0])
+    : undefined;
+
   return (
     <>
       <Header isLoggedIn={!!session?.user} user={session?.user} />
@@ -73,7 +85,7 @@ export default async function ProgramPage({
                 </h1>
                 <div className="flex flex-wrap gap-2">
                   {program.isFeatured && <Badge>Program Utama</Badge>}
-                  <Badge variant="outline">{program.categoryId}</Badge>
+                  {category && <Badge variant="outline">{category.name}</Badge>}
                 </div>
                 <p className="text-base text-muted-foreground leading-relaxed">
                   {program.description ??
@@ -131,16 +143,12 @@ export default async function ProgramPage({
               </div>
 
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border">
-                {program.image ? (
-                  <Image
-                    src={program.image}
-                    alt={program.name}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-primary/25 via-primary/10 to-transparent" />
-                )}
+                <Image
+                  src={program.image || IMAGES.programDefault}
+                  alt={program.name}
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
           </Container>

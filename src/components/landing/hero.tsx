@@ -1,9 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { siteConfig, whatsappLink } from "@/lib/site";
+import { IMAGES } from "@/lib/images";
 
 export function Hero({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
@@ -59,7 +61,15 @@ export function Hero({ isLoggedIn }: { isLoggedIn: boolean }) {
           </div>
         </div>
         <div className="relative mx-auto grid w-full max-w-md grid-cols-2 gap-3 sm:max-w-md">
-          <div className="col-span-2 aspect-[3/2] w-full max-w-md rounded-xl bg-linear-to-br from-primary/25 via-primary/10 to-transparent shadow-2xl ring-1 ring-foreground/10" />
+          <div className="relative col-span-2 aspect-[3/2] w-full max-w-md overflow-hidden rounded-xl shadow-2xl ring-1 ring-foreground/10">
+            <Image
+              src={IMAGES.hero}
+              alt="Tenaga kerja profesional Indonesia"
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
         </div>
       </div>
     </section>

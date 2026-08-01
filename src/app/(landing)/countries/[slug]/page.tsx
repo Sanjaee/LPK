@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, Globe2 } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 
 import { Header } from "@/components/landing/header";
 import { Footer, WhatsAppFloatButton } from "@/components/landing/footer";
@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/auth";
 import { getCountryBySlug, getFeaturedPrograms } from "@/lib/services/landing";
 import { formatIDR } from "@/lib/format";
+import { countryImage } from "@/lib/images";
 import { db } from "@/db";
 import { programs } from "@/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
@@ -100,18 +101,12 @@ export default async function CountryPage({
                 </Button>
               </div>
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border">
-                {country.image ? (
-                  <Image
-                    src={country.image}
-                    alt={country.name}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-primary/25 via-primary/10 to-transparent">
-                    <Globe2 className="size-12 text-muted" />
-                  </div>
-                )}
+                <Image
+                  src={country.image || countryImage(country.slug)}
+                  alt={country.name}
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
           </Container>

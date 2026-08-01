@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { Header } from "@/components/landing/header";
@@ -9,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/auth";
 import { getLandingData } from "@/lib/services/landing";
 import { formatIDR } from "@/lib/format";
+import { IMAGES } from "@/lib/images";
 
 export const metadata = {
   title: "Program",
@@ -33,6 +35,14 @@ export default async function ProgramListPage() {
               {data.programs.map((p) => (
                 <Card key={p.id} className="flex flex-col group">
                   <CardHeader>
+                    <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg">
+                      <Image
+                        src={p.image || IMAGES.programDefault}
+                        alt={p.name}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                      />
+                    </div>
                     <div className="flex items-start justify-between gap-2">
                       <CardTitle className="font-heading text-lg">
                         {p.name}

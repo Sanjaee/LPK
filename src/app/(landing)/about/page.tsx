@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Header } from "@/components/landing/header";
 import { Footer, WhatsAppFloatButton } from "@/components/landing/footer";
 import { Section, SectionHeader, Container } from "@/components/landing/ui";
@@ -5,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check } from "lucide-react";
 import { auth } from "@/auth";
 import { siteConfig } from "@/lib/site";
+import { IMAGES } from "@/lib/images";
 
 export const metadata = {
   title: `Tentang ${siteConfig.name}`,
@@ -28,12 +30,24 @@ export default async function AboutPage() {
       <main className="flex-1">
         <Section className="pt-8">
           <Container>
-            <h1 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-              {siteConfig.name}
-            </h1>
-            <p className="mt-4 max-w-2xl text-base text-muted-foreground">
-              {siteConfig.description}
-            </p>
+            <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
+              <div>
+                <h1 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
+                  {siteConfig.name}
+                </h1>
+                <p className="mt-4 max-w-2xl text-base text-muted-foreground">
+                  {siteConfig.description}
+                </p>
+              </div>
+              <div className="relative aspect-[3/2] w-full overflow-hidden rounded-xl">
+                <Image
+                  src={IMAGES.about}
+                  alt={`Tim ${siteConfig.name}`}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
           </Container>
         </Section>
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Briefcase } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Section, SectionHeader } from "@/components/landing/ui";
 import { type Program } from "@/db/schema";
 import { formatIDR } from "@/lib/format";
+import { IMAGES } from "@/lib/images";
 
 export function Programs({ programs }: { programs: Program[] }) {
   if (!programs.length) return null;
@@ -19,7 +21,14 @@ export function Programs({ programs }: { programs: Program[] }) {
         {programs.map((p) => (
           <Card key={p.id} className="flex flex-col">
             <CardHeader>
-              <div className="aspect-[3/2] w-full rounded-lg bg-linear-to-br from-primary/25 via-primary/10 to-transparent" />
+              <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg">
+                <Image
+                  src={p.image || IMAGES.programDefault}
+                  alt={p.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <div className="mt-3 flex items-start justify-between gap-2">
                 <CardTitle className="font-heading text-lg">{p.name}</CardTitle>
                 {p.isFeatured && <Badge>Featured</Badge>}

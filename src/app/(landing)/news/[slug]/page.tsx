@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
 import { getLandingData, getNewsBySlug } from "@/lib/services/landing";
 import { formatDate } from "@/lib/format";
+import { IMAGES } from "@/lib/images";
 
 export const dynamicParams = false;
 
@@ -76,16 +77,14 @@ export default async function NewsPage({
               {news.title}
             </h1>
 
-            {news.coverImage && (
-              <div className="relative my-6 aspect-[3/1] w-full overflow-hidden rounded-xl">
-                <Image
-                  src={news.coverImage}
-                  alt={news.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
+            <div className="relative my-6 aspect-[3/1] w-full overflow-hidden rounded-xl">
+              <Image
+                src={news.coverImage || IMAGES.newsDefault}
+                alt={news.title}
+                fill
+                className="object-cover"
+              />
+            </div>
 
             <div
               className="prose prose-sm max-w-none dark:prose-invert"

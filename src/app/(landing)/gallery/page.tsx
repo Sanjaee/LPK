@@ -4,6 +4,7 @@ import { Footer, WhatsAppFloatButton } from "@/components/landing/footer";
 import { Section, SectionHeader, Container } from "@/components/landing/ui";
 import { auth } from "@/auth";
 import { getLandingData } from "@/lib/services/landing";
+import { IMAGES } from "@/lib/images";
 
 export const metadata = {
   title: "Galeri",
@@ -13,6 +14,10 @@ export const metadata = {
 export default async function GalleryPage() {
   const session = await auth();
   const data = await getLandingData();
+  const galleries = data.galleries;
+  const items = galleries.length
+    ? galleries.map((g) => ({ src: g.image, caption: g.caption ?? null }))
+    : IMAGES.gallery.map((src) => ({ src, caption: null }));
 
   return (
     <>
@@ -22,24 +27,24 @@ export default async function GalleryPage() {
           <SectionHeader title="Galeri" description="Dokumentasi kegiatan kami." />
           <Container>
             <div className="columns-1 gap-4 sm:columns-2 sm:gap-6 md:columns-3 md:gap-6 lg:columns-4 lg:gap-8">
-              {data.galleries.map((g) => (
+              {items.map((item, i) => (
                 <div
-                  key={g.id}
+                  key={item.src ?? i}
                   className="mb-4 inline-block w-full break-inside-avoid"
                 >
-                  {g.image && (
+                  {item.src && (
                     <Image
-                      src={g.image}
-                      alt={g.caption ?? "Galeri"}
+                      src={item.src}
+                      alt={item.caption ?? "Galeri LPK"}
                       width={400}
                       height={300}
                       className="rounded-lg object-cover"
                       unoptimized
                     />
                   )}
-                  {g.caption && (
+                  {item.caption && (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {g.caption}
+                      {item.caption}
                     </p>
                   )}
                 </div>

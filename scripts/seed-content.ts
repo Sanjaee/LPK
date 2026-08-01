@@ -26,6 +26,7 @@ async function seed() {
       slug: "jepang",
       code: "JP",
       flagEmoji: "🇯🇵",
+      image: "/images/japan.jpg",
       description:
         "Peluang kerja di industri manufaktur, perawatan lansia, dan pertanian dengan gaji kompetitif.",
       isActive: true,
@@ -36,6 +37,7 @@ async function seed() {
       slug: "korea-selatan",
       code: "KR",
       flagEmoji: "🇰🇷",
+      image: "/images/korea.jpg",
       description:
         "Program kerja di sektor manufaktur dan perikanan dengan sistem visa resmi (E-9).",
       isActive: true,
@@ -46,6 +48,7 @@ async function seed() {
       slug: "taiwan",
       code: "TW",
       flagEmoji: "🇹🇼",
+      image: "/images/taiwan.jpg",
       description:
         "Peluang di pabrik elektronik dan perawatan dengan gaji bulanan menarik.",
       isActive: true,
@@ -56,6 +59,7 @@ async function seed() {
       slug: "jerman",
       code: "DE",
       flagEmoji: "🇩🇪",
+      image: "/images/germany.jpg",
       description:
         "Program perawat (Pflegekraft) dengan jalur bahasa dan penempatan resmi.",
       isActive: true,
@@ -66,6 +70,7 @@ async function seed() {
       slug: "malaysia",
       code: "MY",
       flagEmoji: "🇲🇾",
+      image: "/images/malaysia.jpg",
       description:
         "Pilihan terdekat di sektor manufaktur, perkebunan, dan perhotelan.",
       isActive: true,
@@ -76,6 +81,7 @@ async function seed() {
       slug: "uae",
       code: "AE",
       flagEmoji: "🇦🇪",
+      image: "/images/uae.jpg",
       description:
         "Peluang di sektor perhotelan, retail, dan konstruksi dengan upah tinggi.",
       isActive: true,
@@ -146,6 +152,7 @@ async function seed() {
     {
       name: "Program Kerja Manufaktur Jepang",
       slug: "manufaktur-jepang",
+      image: "/images/factory.jpg",
       countryId: countryMap.get("jepang")!,
       categoryId: categoryMap.get("manufaktur")!,
       description:
@@ -168,6 +175,7 @@ async function seed() {
     {
       name: "Program Perawat Jerman (Pflegekraft)",
       slug: "perawat-jerman",
+      image: "/images/nurse.jpg",
       countryId: countryMap.get("jerman")!,
       categoryId: categoryMap.get("perawat")!,
       description:
@@ -190,6 +198,7 @@ async function seed() {
     {
       name: "Program Kerja Korea Selatan (EPS-TOPIK)",
       slug: "kerja-korea-epstopik",
+      image: "/images/factory.jpg",
       countryId: countryMap.get("korea-selatan")!,
       categoryId: categoryMap.get("manufaktur")!,
       description:
@@ -212,6 +221,7 @@ async function seed() {
     {
       name: "Program Kerja Taiwan (Manufaktur)",
       slug: "manufaktur-taiwan",
+      image: "/images/factory.jpg",
       countryId: countryMap.get("taiwan")!,
       categoryId: categoryMap.get("manufaktur")!,
       description:
@@ -233,6 +243,7 @@ async function seed() {
     {
       name: "Program Perhotelan UAE",
       slug: "perhotelan-uae",
+      image: "/images/hotel.jpg",
       countryId: countryMap.get("uae")!,
       categoryId: categoryMap.get("perhotelan")!,
       description:

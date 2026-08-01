@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Section, SectionHeader } from "@/components/landing/ui";
 import { type Country } from "@/db/schema";
+import { countryImage } from "@/lib/images";
 
 export function Countries({ countries }: { countries: Country[] }) {
   if (!countries.length) {
@@ -26,16 +27,12 @@ export function Countries({ countries }: { countries: Country[] }) {
           <Card key={c.id} className="group transition-shadow hover:shadow-lg">
             <CardHeader className="p-0">
               <div className="relative aspect-[3/1] overflow-hidden rounded-t-xl">
-                {c.image ? (
-                  <Image
-                    src={c.image}
-                    alt={c.name}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-primary/25 via-primary/10 to-transparent" />
-                )}
+                <Image
+                  src={c.image || countryImage(c.slug)}
+                  alt={c.name}
+                  fill
+                  className="object-cover transition-transform group-hover:scale-105"
+                />
                 {c.flagEmoji && (
                   <span className="absolute top-2 left-2 text-3xl">{c.flagEmoji}</span>
                 )}

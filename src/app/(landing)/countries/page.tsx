@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { auth } from "@/auth";
 import { getLandingData } from "@/lib/services/landing";
 import { formatIDR } from "@/lib/format";
+import { countryImage } from "@/lib/images";
 
 export const metadata = {
   title: "Negara Tujuan",
@@ -38,16 +39,12 @@ export default async function CountryListPage() {
                   className="group block rounded-xl border p-0 transition-shadow hover:shadow-lg"
                 >
                   <div className="relative aspect-[3/1]">
-                    {c.image ? (
-                      <Image
-                        src={c.image}
-                        alt={c.name}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-linear-to-br from-primary/25 via-primary/10 to-transparent" />
-                    )}
+                    <Image
+                      src={c.image || countryImage(c.slug)}
+                      alt={c.name}
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                    />
                     {c.flagEmoji && (
                       <span className="absolute top-3 left-3 text-3xl">{c.flagEmoji}</span>
                     )}

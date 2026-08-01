@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { Header } from "@/components/landing/header";
@@ -13,6 +14,7 @@ import {
 import { auth } from "@/auth";
 import { getLandingData } from "@/lib/services/landing";
 import { formatDate } from "@/lib/format";
+import { IMAGES } from "@/lib/images";
 
 export const metadata = {
   title: "Berita",
@@ -37,7 +39,15 @@ export default async function NewsListPage() {
               {data.news.map((n) => (
                 <Card key={n.id} className="flex flex-col group">
                   <CardHeader>
-                    <CardTitle className="font-heading text-lg group-hover:text-primary">
+                    <Link href={`/news/${n.slug}`} className="relative block aspect-[3/1] w-full overflow-hidden rounded-t-xl">
+                      <Image
+                        src={n.coverImage || IMAGES.newsDefault}
+                        alt={n.title}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                      />
+                    </Link>
+                    <CardTitle className="mt-3 font-heading text-lg group-hover:text-primary">
                       <Link href={`/news/${n.slug}`}>{n.title}</Link>
                     </CardTitle>
                     <p className="text-xs text-muted-foreground">
