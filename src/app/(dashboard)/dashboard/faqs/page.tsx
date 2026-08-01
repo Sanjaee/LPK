@@ -1,11 +1,7 @@
+"use client";
 import { ResourceList } from "@/components/admin/resource-list";
 import { faqColumns, faqFields, faqSchema } from "@/config/resources/content";
 import { type Faq } from "@/db/schema";
-
-export const metadata = {
-  title: "FAQ",
-  description: "Kelola pertanyaan umum.",
-};
 
 export default function FaqsPage() {
   return (
@@ -18,3 +14,4 @@ export default function FaqsPage() {
     />
   );
 }
+

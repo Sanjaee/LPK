@@ -1,11 +1,7 @@
+"use client";
 import { ResourceList } from "@/components/admin/resource-list";
 import { testimonialColumns, testimonialFields, testimonialSchema } from "@/config/resources/content";
 import { type Testimonial } from "@/db/schema";
-
-export const metadata = {
-  title: "Testimonial",
-  description: "Kelola testimonial.",
-};
 
 export default function TestimonialsAdminPage() {
   return (
@@ -18,3 +14,4 @@ export default function TestimonialsAdminPage() {
     />
   );
 }
+

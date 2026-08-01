@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { applicants, applicationStatusHistory } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { applicantFormSchema } from "@/lib/validations";
 import { validateBody } from "@/lib/api/crud";
 import { auth } from "@/auth";
+import { getRoleById } from "@/lib/rbac";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -56,12 +57,15 @@ export async function GET(request: Request) {
   }
 
   try {
-    const userApplicants = await db
-      .select()
-      .from(applicants)
-      .where(eq(applicants.userId, session.user.id));
+    const role = session.user.roleId ? await getRoleById(session.user.roleId) : null;
+    const isStaff = role?.slug === "super_admin" || role?.slug === "admin" || role?.slug === "staff";
 
-    return NextResponse.json({ data: userApplicants });
+    const query = db.select().from(applicants);
+    const rows = isStaff
+      ? await query.orderBy(desc(applicants.createdAt))
+      : await query.where(eq(applicants.userId, session.user.id)).orderBy(desc(applicants.createdAt));
+
+    return NextResponse.json({ data: rows, isStaff });
   } catch (error) {
     console.error("Fetch applicants error:", error);
     return NextResponse.json({ error: "Gagal memuat data" }, { status: 500 });
