@@ -1,10 +1,11 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { db } from "@/db";
 import { applicants, applicationStatusHistory, applicantDocuments } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { auth } from "@/auth";
+import { getRoleById } from "@/lib/rbac";
 import { DocumentUploadForm } from "@/components/applicants/document-upload-form";
 import { Header } from "@/components/landing/header";
 import { Footer, WhatsAppFloatButton } from "@/components/landing/footer";
@@ -24,6 +25,11 @@ export default async function ApplicantDetailPage({
 
   if (!session?.user?.id) {
     notFound();
+  }
+
+  const role = session.user.roleId ? await getRoleById(session.user.roleId) : null;
+  if (role && ["super_admin", "admin", "staff", "instructor"].includes(role.slug)) {
+    redirect(`/dashboard/applicants/${id}`);
   }
 
   const applicant = await db

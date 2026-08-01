@@ -26,7 +26,6 @@ import {
 import {
   Select,
   SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
@@ -129,6 +128,13 @@ export function ResourceFormDialog({
 
   const watchValues = watch();
 
+  const optionLabel = (f: FieldConfig): string | null => {
+    const v = watchValues[f.name]?.toString() ?? "";
+    if (!v) return null;
+    const opts = f.options ?? optionsByUrl[f.optionsUrl ?? ""] ?? [];
+    return opts.find((o) => o.value === v)?.label ?? v;
+  };
+
   useEffect(() => {
     if (open && record) {
       reset({ ...defaultValues });
@@ -178,7 +184,11 @@ export function ResourceFormDialog({
                     onValueChange={(val) => setValue(f.name, val || undefined)}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder={f.placeholder} />
+                      <span className="flex flex-1 items-center truncate text-left">
+                        {optionLabel(f) ?? (
+                          <span className="text-muted-foreground">{f.placeholder}</span>
+                        )}
+                      </span>
                     </SelectTrigger>
                     <SelectContent>
                       {(f.options ?? optionsByUrl[f.optionsUrl ?? ""] ?? []).map((o) => (

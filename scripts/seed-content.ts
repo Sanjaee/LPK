@@ -8,6 +8,7 @@ import {
   companies,
   testimonials,
   faqs,
+  news,
 } from "../src/db/schema";
 
 const connectionString = process.env.DATABASE_URL;
@@ -415,6 +416,36 @@ async function seed() {
     ])
     .onConflictDoNothing();
   console.log("FAQs seeded");
+
+  console.log("Seeding news...");
+  await db
+    .insert(news)
+    .values([
+      {
+        title: "Lowongan Baru: Program Kerja Jepang 2026 Kembali Dibuka",
+        slug: "test",
+        excerpt:
+          "LPK Bina Karya Nusantara membuka kembali pendaftaran program kerja manufaktur Jepang untuk tahun 2026.",
+        content:
+          "<p>Program kerja Jepang 2026 kembali dibuka untuk para pencari kerja yang ingin membangun karier internasional.</p><p>Kami menyediakan pelatihan bahasa Jepang, pembekalan keterampilan, serta pendampingan proses visa dan penempatan.</p><h3>Persyaratan Umum</h3><ul><li>Usia 18-35 tahun</li><li>Lulus SMA/sederajat</li><li>Sehat jasmani dan rohani</li></ul><p>Jangan lewatkan kesempatan ini. Segera daftarkan diri Anda melalui halaman pendaftaran.</p>",
+        coverImage: "/images/news1.jpg",
+        status: "published",
+        publishedAt: new Date(),
+      },
+      {
+        title: "Alumni LPK Berhasil Bekerja di Jerman Sebagai Perawat",
+        slug: "alumni-perawat-jerman",
+        excerpt:
+          "Kisah sukses alumni yang kini bekerja sebagai perawat profesional di rumah sakit Berlin.",
+        content:
+          "<p>Kisah sukses alumni kami yang berhasil lolos program bahasa Jerman B2 dan ditempatkan di rumah sakit di Berlin.</p><p>Dengan bimbingan intensif dari LPK, persiapan bahasa dan dokumen menjadi lebih terarah.</p>",
+        coverImage: "/images/news2.jpg",
+        status: "published",
+        publishedAt: new Date(Date.now() - 86400000),
+      },
+    ])
+    .onConflictDoNothing();
+  console.log("News seeded");
 
   console.log("Content seed complete ✓");
 }

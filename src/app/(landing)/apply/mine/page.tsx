@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { db } from "@/db";
 import { applicants, programs } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/auth";
+import { getRoleById } from "@/lib/rbac";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,11 @@ export default async function MyApplicationsPage() {
 
   if (!session?.user?.id) {
     notFound();
+  }
+
+  const role = session.user.roleId ? await getRoleById(session.user.roleId) : null;
+  if (role && ["super_admin", "admin", "staff", "instructor"].includes(role.slug)) {
+    redirect("/dashboard/applicants");
   }
 
   const myApplicants = await db

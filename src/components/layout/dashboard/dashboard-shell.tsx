@@ -144,6 +144,10 @@ export function DashboardShell({
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem render={<Link href="/dashboard/applicants" />}>
+                  <UserRound className="size-4" />
+                  Status Saya
+                </DropdownMenuItem>
                 <DropdownMenuItem render={<Link href="/dashboard/settings" />}>
                   <Settings className="size-4" />
                   Pengaturan
