@@ -111,4 +111,53 @@ export const userSchema = z.object({
   password: z.string().min(6).optional(),
 });
 
+export const applicantStep1Schema = z.object({
+  fullName: z.string().min(2).max(100),
+  email: z.string().email("Email tidak valid"),
+  phone: z.string().min(10),
+  whatsapp: z.string().min(10).optional(),
+  dateOfBirth: z.string(),
+  gender: z.enum(["male", "female"]),
+  maritalStatus: z.enum(["single", "married", "divorced", "widowed"]),
+  bloodType: z.string().optional(),
+  placeOfBirth: z.string().optional(),
+  religion: z.string().optional(),
+  heightCm: z.number().int().positive().optional(),
+  weightKg: z.number().int().positive().optional(),
+});
+
+export const applicantStep2Schema = z.object({
+  school: z.string().min(2),
+  major: z.string().min(2),
+  gradYear: z.number().int().min(1900).max(new Date().getFullYear()),
+  lastEducation: z.string().optional(),
+  workCompany: z.string().optional(),
+  workPosition: z.string().optional(),
+  workYears: z.number().int().min(0).optional(),
+  skills: z.array(z.string()).optional(),
+  languages: z.array(z.string()).optional(),
+});
+
+export const applicantStep3Schema = z.object({
+  province: z.string().min(2),
+  city: z.string().min(2),
+  district: z.string().min(2),
+  subDistrict: z.string().min(2),
+  postalCode: z.string().min(4).max(10),
+  address: z.string().min(5),
+  emergencyName: z.string().min(2),
+  emergencyPhone: z.string().min(10),
+  nik: z.string().optional(),
+  passportNo: z.string().optional(),
+});
+
+export const applicantFormSchema = applicantStep1Schema
+  .merge(applicantStep2Schema)
+  .merge(applicantStep3Schema)
+  .extend({
+    programId: z.string().uuid("Program harus dipilih"),
+  });
+
+export type ApplicantFormInput = z.infer<typeof applicantFormSchema>;
+
 export type ContactMessageInput = z.infer<typeof contactMessageSchema>;

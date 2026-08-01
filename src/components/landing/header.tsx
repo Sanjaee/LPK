@@ -52,11 +52,19 @@ export function Header({ isLoggedIn }: HeaderProps) {
 
         <div className="flex items-center gap-1">
           <ThemeToggle />
+          <Button size="sm" render={<Link href="/apply" />}>
+            Daftar Kerja
+          </Button>
           <div className="hidden items-center gap-1.5 md:flex">
             {isLoggedIn ? (
-              <Button size="sm" render={<Link href="/dashboard" />}>
-                Dashboard
-              </Button>
+              <>
+                <Button size="sm" variant="ghost" render={<Link href="/apply/mine" />}>
+                  Status Saya
+                </Button>
+                <Button size="sm" variant="outline" render={<Link href="/dashboard" />}>
+                  Dashboard
+                </Button>
+              </>
             ) : (
               <>
                 <Button
@@ -66,14 +74,14 @@ export function Header({ isLoggedIn }: HeaderProps) {
                 >
                   Masuk
                 </Button>
-                <Button size="sm" render={<Link href="/register" />}>
+                <Button size="sm" variant="outline" render={<Link href="/register" />}>
                   Daftar
                 </Button>
               </>
             )}
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               render={
                 <a
                   href={whatsappLink()}

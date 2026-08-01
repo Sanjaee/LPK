@@ -31,10 +31,14 @@ export function getPaginationState(request: Request): PaginationState {
   };
 }
 
+ 
 export async function paginateQuery(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   totalQuery: any,
   state: PaginationState
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<PaginatedResult<any>> {
   const offset = (state.page - 1) * state.limit;
   const rows = await query.limit(state.limit).offset(offset);
@@ -51,6 +55,7 @@ export async function paginateQuery(
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function validateBody<T extends ZodSchema<any, any, any>>(
   schema: T,
   body: unknown

@@ -17,7 +17,6 @@ interface ResourceListProps<TData extends { id: React.Key }> {
   label: string;
   columns: ColumnDef<TData>[];
   fields: FieldConfig[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema: ZodTypeAny;
 }
 
@@ -30,7 +29,6 @@ const fetcher = async (url: string) => {
   return res.json();
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ResourceList<TData extends { id: React.Key }>({
   resource,
   label,
@@ -42,7 +40,6 @@ export function ResourceList<TData extends { id: React.Key }>({
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<TData | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const {
     data,
     isError,
