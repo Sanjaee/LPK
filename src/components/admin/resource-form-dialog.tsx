@@ -144,7 +144,7 @@ export function ResourceFormDialog({
                     value={record?.[f.name]?.toString() ?? undefined}
                     onValueChange={(val) => setValue(f.name, val)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder={f.placeholder} />
                     </SelectTrigger>
                     <SelectContent>

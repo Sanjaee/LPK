@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -14,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
@@ -29,6 +29,24 @@ interface ApplicantFormProps {
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 61 }, (_, i) => CURRENT_YEAR - i);
 
+const GENDER_LABELS: Record<string, string> = {
+  male: "Laki-laki",
+  female: "Perempuan",
+};
+
+const MARITAL_LABELS: Record<string, string> = {
+  single: "Belum Menikah",
+  married: "Menikah",
+  divorced: "Cerai",
+  widowed: "Duda/Janda",
+};
+
+const selectDisplay = (value: string | undefined, placeholder: string, label?: string) => (
+  <span className="flex flex-1 items-center truncate text-left">
+    {value ? (label ?? value) : <span className="text-muted-foreground">{placeholder}</span>}
+  </span>
+);
+
 const STEP_FIELDS: Record<number, (keyof ApplicantFormInput)[]> = {
   1: ["fullName", "email", "phone", "whatsapp", "dateOfBirth", "placeOfBirth", "gender", "maritalStatus"],
   2: ["programId", "school", "major", "gradYear", "skills", "languages"],
@@ -36,6 +54,7 @@ const STEP_FIELDS: Record<number, (keyof ApplicantFormInput)[]> = {
 };
 
 export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormProps) {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -81,6 +100,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
         description: "Terima kasih, pendaftaran Anda telah kami terima.",
       });
       onSuccess?.();
+      router.push("/apply/mine");
     } catch (err) {
       toast.error("Gagal mendaftarkan", {
         description: (err as Error).message,
@@ -127,7 +147,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 </FieldContent>
               </Field>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Telepon *</FieldLabel>
                   <FieldContent>
@@ -145,7 +165,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Tanggal Lahir *</FieldLabel>
                   <FieldContent>
@@ -162,7 +182,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Jenis Kelamin *</FieldLabel>
                   <FieldContent>
@@ -170,8 +190,8 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                       value={gender || ""}
                       onValueChange={(val) => setValue("gender", val as ApplicantFormInput["gender"])}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih jenis kelamin" />
+                      <SelectTrigger className="w-full">
+                        {selectDisplay(gender, "Pilih jenis kelamin", gender ? GENDER_LABELS[gender] : undefined)}
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="male">Laki-laki</SelectItem>
@@ -189,8 +209,8 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                       value={maritalStatus || ""}
                       onValueChange={(val) => setValue("maritalStatus", val as ApplicantFormInput["maritalStatus"])}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih status" />
+                      <SelectTrigger className="w-full">
+                        {selectDisplay(maritalStatus, "Pilih status", maritalStatus ? MARITAL_LABELS[maritalStatus] : undefined)}
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="single">Belum Menikah</SelectItem>
@@ -204,7 +224,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 </Field>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid gap-4 sm:grid-cols-3">
                 <Field>
                   <FieldLabel>Tinggi (cm)</FieldLabel>
                   <FieldContent>
@@ -226,8 +246,8 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                       value={bloodType || ""}
                       onValueChange={(val) => setValue("bloodType", val ?? "")}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih" />
+                      <SelectTrigger className="w-full">
+                        {selectDisplay(bloodType, "Pilih")}
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="A">A</SelectItem>
@@ -254,8 +274,8 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                     value={programId || ""}
                     onValueChange={(val) => setValue("programId", val ?? "")}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih program" />
+                    <SelectTrigger className="w-full">
+                      {selectDisplay(programId, "Pilih program", programs.find((p) => p.id === programId)?.name)}
                     </SelectTrigger>
                     <SelectContent>
                       {programs.map((p) => (
@@ -277,7 +297,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 </FieldContent>
               </Field>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Jurusan / Bidang *</FieldLabel>
                   <FieldContent>
@@ -293,8 +313,8 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                       value={String(gradYear)}
                       onValueChange={(val) => setValue("gradYear", Number(val))}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih tahun" />
+                      <SelectTrigger className="w-full">
+                        {selectDisplay(String(gradYear), "Pilih tahun")}
                       </SelectTrigger>
                       <SelectContent>
                         {YEARS.map((y) => (
@@ -309,7 +329,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Pengalaman Kerja</FieldLabel>
                   <FieldContent>
@@ -367,7 +387,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
             <div className="space-y-4">
               <h3 className="text-sm font-semibold">Alamat Domisili</h3>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Provinsi *</FieldLabel>
                   <FieldContent>
@@ -385,7 +405,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Kecamatan *</FieldLabel>
                   <FieldContent>
@@ -403,7 +423,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Kode Pos *</FieldLabel>
                   <FieldContent>
@@ -430,7 +450,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
 
               <h3 className="text-sm font-semibold pt-4">Kontak Darurat</h3>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel>Nama Kontak Darurat *</FieldLabel>
                   <FieldContent>

@@ -89,7 +89,7 @@ export function StatusUpdateForm({
         <FieldLabel>Pindah Ke</FieldLabel>
         <FieldContent>
           <Select value={nextStatus} onValueChange={(val) => setNextStatus(val ?? "")}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Pilih status" />
             </SelectTrigger>
             <SelectContent>

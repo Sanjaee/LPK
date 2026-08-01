@@ -83,7 +83,7 @@ export function DocumentUploadForm({ applicantId }: DocumentUploadFormProps) {
           <FieldLabel>Tipe Dokumen</FieldLabel>
           <FieldContent>
             <Select value={docType} onValueChange={(val) => setDocType(val ?? "")}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih tipe" />
               </SelectTrigger>
               <SelectContent>
