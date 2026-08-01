@@ -18,50 +18,54 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { applicantFormSchema, applicantStep1Schema, applicantStep2Schema, applicantStep3Schema, type ApplicantFormInput } from "@/lib/validations";
+import { TagInput } from "@/components/applicants/tag-input";
+import { applicantFormSchema, type ApplicantFormInput } from "@/lib/validations";
 
 interface ApplicantFormProps {
   programs: { id: string; name: string }[];
   onSuccess?: () => void;
 }
 
+const CURRENT_YEAR = new Date().getFullYear();
+const YEARS = Array.from({ length: 61 }, (_, i) => CURRENT_YEAR - i);
+
+const STEP_FIELDS: Record<number, (keyof ApplicantFormInput)[]> = {
+  1: ["fullName", "email", "phone", "whatsapp", "dateOfBirth", "placeOfBirth", "gender", "maritalStatus"],
+  2: ["programId", "school", "major", "gradYear", "skills", "languages"],
+  3: ["province", "city", "district", "subDistrict", "postalCode", "address", "emergencyName", "emergencyPhone"],
+};
+
 export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormProps) {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const getStepSchema = () => {
-    switch (step) {
-      case 1:
-        return applicantStep1Schema;
-      case 2:
-        return applicantStep2Schema;
-      case 3:
-        return applicantStep3Schema;
-      default:
-        return applicantFormSchema;
-    }
-  };
-
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors },
     setValue,
     watch,
   } = useForm<ApplicantFormInput>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(getStepSchema()) as any,
-    mode: "onChange",
+    resolver: zodResolver(applicantFormSchema) as any,
+    mode: "onTouched",
+    defaultValues: {
+      heightCm: undefined,
+      weightKg: undefined,
+      gradYear: CURRENT_YEAR,
+      workYears: undefined,
+      skills: [],
+      languages: [],
+    },
   });
 
-  const programId = watch("programId");
+  const nextStep = async () => {
+    const ok = await trigger(STEP_FIELDS[step]);
+    if (ok) setStep(step + 1);
+  };
 
   const onSubmit = async (data: ApplicantFormInput) => {
-    if (step < 3) {
-      setStep(step + 1);
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const res = await fetch("/api/applicants", {
@@ -74,7 +78,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
       if (!res.ok) throw new Error(result.error ?? "Gagal mendaftarkan");
 
       toast.success("Pendaftaran berhasil", {
-        description: "Silakan cek email untuk verifikasi.",
+        description: "Terima kasih, pendaftaran Anda telah kami terima.",
       });
       onSuccess?.();
     } catch (err) {
@@ -85,6 +89,14 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
       setIsSubmitting(false);
     }
   };
+
+  const gender = watch("gender");
+  const maritalStatus = watch("maritalStatus");
+  const bloodType = watch("bloodType");
+  const programId = watch("programId");
+  const gradYear = watch("gradYear");
+  const skills = watch("skills");
+  const languages = watch("languages");
 
   return (
     <Card className="w-full max-w-2xl">
@@ -102,7 +114,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
               <Field>
                 <FieldLabel>Nama Lengkap *</FieldLabel>
                 <FieldContent>
-                  <Input placeholder="Masukkan nama lengkap" {...register("fullName")} />
+                  <Input placeholder="Nama lengkap sesuai KTP" {...register("fullName")} />
                   <FieldError errors={errors.fullName ? [errors.fullName] : []} />
                 </FieldContent>
               </Field>
@@ -110,7 +122,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
               <Field>
                 <FieldLabel>Email *</FieldLabel>
                 <FieldContent>
-                  <Input type="email" placeholder="email@example.com" {...register("email")} />
+                  <Input type="email" inputMode="email" placeholder="nama@email.com" {...register("email")} />
                   <FieldError errors={errors.email ? [errors.email] : []} />
                 </FieldContent>
               </Field>
@@ -119,7 +131,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Telepon *</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="08xxxxxxxxxx" {...register("phone")} />
+                    <Input type="tel" inputMode="tel" placeholder="08xxxxxxxxxx" {...register("phone")} />
                     <FieldError errors={errors.phone ? [errors.phone] : []} />
                   </FieldContent>
                 </Field>
@@ -127,7 +139,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>WhatsApp</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="08xxxxxxxxxx" {...register("whatsapp")} />
+                    <Input type="tel" inputMode="tel" placeholder="08xxxxxxxxxx" {...register("whatsapp")} />
                     <FieldError errors={errors.whatsapp ? [errors.whatsapp] : []} />
                   </FieldContent>
                 </Field>
@@ -145,7 +157,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Tempat Lahir</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="Kota/Kabupaten" {...register("placeOfBirth")} />
+                    <Input placeholder="Kota / Kabupaten" {...register("placeOfBirth")} />
                   </FieldContent>
                 </Field>
               </div>
@@ -154,7 +166,10 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Jenis Kelamin *</FieldLabel>
                   <FieldContent>
-                    <Select defaultValue="" onValueChange={(val) => setValue("gender", val as ApplicantFormInput["gender"])}>
+                    <Select
+                      value={gender || ""}
+                      onValueChange={(val) => setValue("gender", val as ApplicantFormInput["gender"])}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih jenis kelamin" />
                       </SelectTrigger>
@@ -170,7 +185,10 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Status Pernikahan *</FieldLabel>
                   <FieldContent>
-                    <Select defaultValue="" onValueChange={(val) => setValue("maritalStatus", val as ApplicantFormInput["maritalStatus"])}>
+                    <Select
+                      value={maritalStatus || ""}
+                      onValueChange={(val) => setValue("maritalStatus", val as ApplicantFormInput["maritalStatus"])}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih status" />
                       </SelectTrigger>
@@ -190,21 +208,24 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Tinggi (cm)</FieldLabel>
                   <FieldContent>
-                    <Input type="number" placeholder="170" {...register("heightCm", { valueAsNumber: true })} />
+                    <Input type="number" inputMode="numeric" min={100} max={250} placeholder="170" {...register("heightCm", { valueAsNumber: true })} />
                   </FieldContent>
                 </Field>
 
                 <Field>
                   <FieldLabel>Berat (kg)</FieldLabel>
                   <FieldContent>
-                    <Input type="number" placeholder="70" {...register("weightKg", { valueAsNumber: true })} />
+                    <Input type="number" inputMode="numeric" min={30} max={200} placeholder="65" {...register("weightKg", { valueAsNumber: true })} />
                   </FieldContent>
                 </Field>
 
                 <Field>
                   <FieldLabel>Golongan Darah</FieldLabel>
                   <FieldContent>
-                    <Select defaultValue="" onValueChange={(val) => setValue("bloodType", val ?? "")}>
+                    <Select
+                      value={bloodType || ""}
+                      onValueChange={(val) => setValue("bloodType", val ?? "")}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih" />
                       </SelectTrigger>
@@ -227,9 +248,12 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
               <h3 className="text-sm font-semibold">Pendidikan & Pengalaman</h3>
 
               <Field>
-                <FieldLabel>Program *</FieldLabel>
+                <FieldLabel>Program yang Diinginkan *</FieldLabel>
                 <FieldContent>
-                  <Select value={programId || ""} onValueChange={(val) => setValue("programId", val ?? "")}>
+                  <Select
+                    value={programId || ""}
+                    onValueChange={(val) => setValue("programId", val ?? "")}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih program" />
                     </SelectTrigger>
@@ -246,7 +270,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
               </Field>
 
               <Field>
-                <FieldLabel>Sekolah/Universitas *</FieldLabel>
+                <FieldLabel>Sekolah / Universitas *</FieldLabel>
                 <FieldContent>
                   <Input placeholder="Nama institusi pendidikan" {...register("school")} />
                   <FieldError errors={errors.school ? [errors.school] : []} />
@@ -255,7 +279,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
 
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>Jurusan/Bidang *</FieldLabel>
+                  <FieldLabel>Jurusan / Bidang *</FieldLabel>
                   <FieldContent>
                     <Input placeholder="Contoh: Teknik Mesin" {...register("major")} />
                     <FieldError errors={errors.major ? [errors.major] : []} />
@@ -265,69 +289,97 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Tahun Lulus *</FieldLabel>
                   <FieldContent>
-                    <Input type="number" placeholder={new Date().getFullYear().toString()} {...register("gradYear", { valueAsNumber: true })} />
+                    <Select
+                      value={String(gradYear)}
+                      onValueChange={(val) => setValue("gradYear", Number(val))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih tahun" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {YEARS.map((y) => (
+                          <SelectItem key={y} value={String(y)}>
+                            {y}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FieldError errors={errors.gradYear ? [errors.gradYear] : []} />
                   </FieldContent>
                 </Field>
               </div>
 
-              <Field>
-                <FieldLabel>Pengalaman Kerja (Perusahaan)</FieldLabel>
-                <FieldContent>
-                  <Input placeholder="Nama perusahaan" {...register("workCompany")} />
-                </FieldContent>
-              </Field>
-
               <div className="grid grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>Posisi Kerja</FieldLabel>
+                  <FieldLabel>Pengalaman Kerja</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="Contoh: Manager" {...register("workPosition")} />
+                    <Input placeholder="Nama perusahaan terakhir" {...register("workCompany")} />
                   </FieldContent>
                 </Field>
 
                 <Field>
-                  <FieldLabel>Tahun Pengalaman</FieldLabel>
+                  <FieldLabel>Posisi Terakhir</FieldLabel>
                   <FieldContent>
-                    <Input type="number" placeholder="0" {...register("workYears", { valueAsNumber: true })} />
+                    <Input placeholder="Contoh: Operator Mesin" {...register("workPosition")} />
                   </FieldContent>
                 </Field>
               </div>
 
               <Field>
-                <FieldLabel>Keterampilan (pisahkan dengan koma)</FieldLabel>
+                <FieldLabel>Tahun Pengalaman</FieldLabel>
                 <FieldContent>
-                  <Textarea placeholder="Contoh: Mesin, Las, Electrical" {...register("skills")} />
+                  <Input type="number" inputMode="numeric" min={0} max={50} placeholder="0" {...register("workYears", { valueAsNumber: true })} />
                 </FieldContent>
               </Field>
 
               <Field>
-                <FieldLabel>Bahasa (pisahkan dengan koma)</FieldLabel>
+                <FieldLabel>Keterampilan</FieldLabel>
                 <FieldContent>
-                  <Textarea placeholder="Contoh: Inggris, Mandarin" {...register("languages")} />
+                  <TagInput
+                    value={skills ?? []}
+                    onChange={(tags) => setValue("skills", tags)}
+                    placeholder="Ketik keterampilan lalu tekan Enter"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Contoh: Mengelas, Mengemudi, Menjahit
+                  </p>
+                </FieldContent>
+              </Field>
+
+              <Field>
+                <FieldLabel>Bahasa yang Dikuasai</FieldLabel>
+                <FieldContent>
+                  <TagInput
+                    value={languages ?? []}
+                    onChange={(tags) => setValue("languages", tags)}
+                    placeholder="Ketik bahasa lalu tekan Enter"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Contoh: Inggris, Mandarin, Arab
+                  </p>
                 </FieldContent>
               </Field>
             </div>
           )}
 
-          {/* Step 3: Address & Documents */}
+          {/* Step 3: Address & Emergency Contact */}
           {step === 3 && (
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold">Alamat & Kontak Darurat</h3>
+              <h3 className="text-sm font-semibold">Alamat Domisili</h3>
 
               <div className="grid grid-cols-2 gap-4">
                 <Field>
                   <FieldLabel>Provinsi *</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="Jawa Barat" {...register("province")} />
+                    <Input placeholder="Contoh: Jawa Barat" {...register("province")} />
                     <FieldError errors={errors.province ? [errors.province] : []} />
                   </FieldContent>
                 </Field>
 
                 <Field>
-                  <FieldLabel>Kota/Kabupaten *</FieldLabel>
+                  <FieldLabel>Kota / Kabupaten *</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="Bandung" {...register("city")} />
+                    <Input placeholder="Contoh: Bandung" {...register("city")} />
                     <FieldError errors={errors.city ? [errors.city] : []} />
                   </FieldContent>
                 </Field>
@@ -337,15 +389,15 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Kecamatan *</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="Bandung Wetan" {...register("district")} />
+                    <Input placeholder="Nama kecamatan" {...register("district")} />
                     <FieldError errors={errors.district ? [errors.district] : []} />
                   </FieldContent>
                 </Field>
 
                 <Field>
-                  <FieldLabel>Kelurahan *</FieldLabel>
+                  <FieldLabel>Kelurahan / Desa *</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="Bandung Wetan" {...register("subDistrict")} />
+                    <Input placeholder="Nama kelurahan" {...register("subDistrict")} />
                     <FieldError errors={errors.subDistrict ? [errors.subDistrict] : []} />
                   </FieldContent>
                 </Field>
@@ -355,7 +407,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Kode Pos *</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="40123" {...register("postalCode")} />
+                    <Input type="text" inputMode="numeric" maxLength={5} placeholder="40123" {...register("postalCode")} />
                     <FieldError errors={errors.postalCode ? [errors.postalCode] : []} />
                   </FieldContent>
                 </Field>
@@ -363,7 +415,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>NIK</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="1234567890123456" {...register("nik")} />
+                    <Input type="text" inputMode="numeric" maxLength={16} placeholder="16 digit NIK" {...register("nik")} />
                   </FieldContent>
                 </Field>
               </div>
@@ -382,7 +434,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Nama Kontak Darurat *</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="Nama keluarga" {...register("emergencyName")} />
+                    <Input placeholder="Nama keluarga / kerabat" {...register("emergencyName")} />
                     <FieldError errors={errors.emergencyName ? [errors.emergencyName] : []} />
                   </FieldContent>
                 </Field>
@@ -390,7 +442,7 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
                 <Field>
                   <FieldLabel>Telepon Darurat *</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="08xxxxxxxxxx" {...register("emergencyPhone")} />
+                    <Input type="tel" inputMode="tel" placeholder="08xxxxxxxxxx" {...register("emergencyPhone")} />
                     <FieldError errors={errors.emergencyPhone ? [errors.emergencyPhone] : []} />
                   </FieldContent>
                 </Field>
@@ -410,21 +462,23 @@ export function ApplicantMultiStepForm({ programs, onSuccess }: ApplicantFormPro
               Sebelumnya
             </Button>
 
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="size-4 mr-2 animate-spin" />
-                  Memproses...
-                </>
-              ) : step === 3 ? (
-                "Kirim Pendaftaran"
-              ) : (
-                <>
-                  Selanjutnya
-                  <ChevronRight className="size-4 ml-2" />
-                </>
-              )}
-            </Button>
+            {step < 3 ? (
+              <Button type="button" onClick={nextStep}>
+                Selanjutnya
+                <ChevronRight className="size-4 ml-2" />
+              </Button>
+            ) : (
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="size-4 mr-2 animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  "Kirim Pendaftaran"
+                )}
+              </Button>
+            )}
           </div>
         </form>
       </CardContent>
