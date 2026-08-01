@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -132,14 +133,16 @@ export function DashboardShell({
                 </span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col">
-                    <span className="truncate font-medium">{displayName}</span>
-                    <span className="truncate text-xs font-normal text-muted-foreground">
-                      {user.email ?? "tanpa email"}
-                    </span>
-                  </div>
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span className="truncate font-medium">{displayName}</span>
+                      <span className="truncate text-xs font-normal text-muted-foreground">
+                        {user.email ?? "tanpa email"}
+                      </span>
+                    </div>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem render={<Link href="/dashboard/settings" />}>
                   <Settings className="size-4" />
