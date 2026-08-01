@@ -29,9 +29,12 @@ export const newsFields: FieldConfig[] = [
   { name: "excerpt", label: "Ringkasan", type: "textarea" },
   { name: "content", label: "Konten", type: "textarea" },
   { name: "coverImage", label: "URL Sampul", type: "text" },
-  { name: "authorId", label: "Author ID", type: "text" },
-  { name: "status", label: "Status", type: "text" },
-  { name: "publishedAt", label: "Dipublikasi Pada", type: "text" },
+  { name: "authorId", label: "Penulis", type: "select", optionsUrl: "/api/options/users" },
+  { name: "status", label: "Status", type: "select", options: [
+    { value: "draft", label: "Draft" },
+    { value: "published", label: "Terbit" },
+  ] },
+  { name: "publishedAt", label: "Dipublikasi Pada", type: "date" },
 ];
 
 export const newsColumns: ColumnDef<News>[] = [
@@ -70,7 +73,7 @@ export const testimonialFields: FieldConfig[] = [
   { name: "avatar", label: "URL Avatar", type: "text" },
   { name: "quote", label: "Kutipan", type: "textarea", required: true },
   { name: "rating", label: "Rating", type: "number" },
-  { name: "countryId", label: "Negara ID", type: "text" },
+  { name: "countryId", label: "Negara", type: "select", optionsUrl: "/api/options/countries" },
   { name: "isActive", label: "Aktif", type: "switch" },
 ];
 
@@ -84,8 +87,12 @@ export const userFields: FieldConfig[] = [
   { name: "name", label: "Nama", type: "text", required: true },
   { name: "email", label: "Email", type: "text", required: true },
   { name: "phone", label: "Telepon", type: "text" },
-  { name: "roleId", label: "Role ID", type: "text" },
-  { name: "status", label: "Status", type: "text" },
+  { name: "roleId", label: "Role", type: "select", optionsUrl: "/api/options/roles" },
+  { name: "status", label: "Status", type: "select", options: [
+    { value: "active", label: "Aktif" },
+    { value: "inactive", label: "Nonaktif" },
+    { value: "suspended", label: "Suspend" },
+  ] },
 ];
 
 export const userColumns: ColumnDef<User>[] = [

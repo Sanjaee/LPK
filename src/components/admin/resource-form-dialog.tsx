@@ -30,7 +30,8 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { useQueryClient } from "@tanstack/react-query";
+import { Switch } from "@/components/ui/switch";
+import { useQueryClient, useQueries } from "@tanstack/react-query";
 
 export type FieldType =
   | "text"
@@ -38,6 +39,7 @@ export type FieldType =
   | "tel"
   | "number"
   | "password"
+  | "date"
   | "textarea"
   | "select"
   | "switch"
@@ -49,8 +51,19 @@ export interface FieldConfig {
   type?: FieldType;
   placeholder?: string;
   options?: { value: string; label: string }[];
+  optionsUrl?: string;
   required?: boolean;
   className?: string;
+}
+
+function dateInputValue(v: unknown): string {
+  if (!v) return "";
+  if (typeof v === "string") return v.slice(0, 10);
+  if (v instanceof Date) {
+    const d = new Date(v.getTime() - v.getTimezoneOffset() * 60000);
+    return d.toISOString().slice(0, 10);
+  }
+  return "";
 }
 
 export interface ResourceFormDialogProps {
@@ -77,8 +90,25 @@ export function ResourceFormDialog({
   const isEdit = !!record && !!record.id;
   const title = titleProp ?? (isEdit ? `Edit ${resource}` : `Tambah ${resource}`);
 
+  const optionsUrls = [...new Set(fields.filter((f) => f.optionsUrl).map((f) => f.optionsUrl!))];
+  const optionQueries = useQueries({
+    queries: optionsUrls.map((url) => ({
+      queryKey: ["options", url],
+      queryFn: async () => {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Gagal memuat opsi");
+        return res.json();
+      },
+      staleTime: 5 * 60_000,
+    })),
+  });
+  const optionsByUrl: Record<string, { value: string; label: string }[]> = {};
+  optionsUrls.forEach((url, i) => {
+    optionsByUrl[url] = optionQueries[i].data?.data ?? [];
+  });
+
   const defaultValues = fields.reduce((acc, f) => {
-    acc[f.name] = record?.[f.name] ?? "";
+    acc[f.name] = f.type === "switch" ? (record?.[f.name] ?? true) : (record?.[f.name] ?? "");
     return acc;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }, {} as Record<string, any>);
@@ -88,6 +118,7 @@ export function ResourceFormDialog({
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<any>({
@@ -95,6 +126,8 @@ export function ResourceFormDialog({
     resolver: zodResolver(schema as any),
     defaultValues,
   });
+
+  const watchValues = watch();
 
   useEffect(() => {
     if (open && record) {
@@ -141,20 +174,33 @@ export function ResourceFormDialog({
                   />
                 ) : f.type === "select" ? (
                   <Select
-                    value={record?.[f.name]?.toString() ?? undefined}
-                    onValueChange={(val) => setValue(f.name, val)}
+                    value={watchValues[f.name]?.toString() ?? ""}
+                    onValueChange={(val) => setValue(f.name, val || undefined)}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder={f.placeholder} />
                     </SelectTrigger>
                     <SelectContent>
-                      {f.options?.map((o) => (
+                      {(f.options ?? optionsByUrl[f.optionsUrl ?? ""] ?? []).map((o) => (
                         <SelectItem key={o.value} value={o.value}>
                           {o.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                ) : f.type === "date" ? (
+                  <Input
+                    type="date"
+                    value={dateInputValue(watchValues[f.name])}
+                    onChange={(e) => setValue(f.name, e.target.value)}
+                  />
+                ) : f.type === "switch" ? (
+                  <Switch
+                    checked={!!watchValues[f.name]}
+                    onCheckedChange={(v) => setValue(f.name, v)}
+                  />
+                ) : f.type === "hidden" ? (
+                  <Input type="hidden" {...register(f.name)} />
                 ) : (
                   <Input
                     type={f.type ?? "text"}

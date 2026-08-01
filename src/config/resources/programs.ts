@@ -26,6 +26,8 @@ export const companyColumns: ColumnDef<Company>[] = [
 export const programFields: FieldConfig[] = [
   { name: "name", label: "Nama Program", type: "text", required: true },
   { name: "slug", label: "Slug", type: "text", required: true },
+  { name: "countryId", label: "Negara", type: "select", optionsUrl: "/api/options/countries" },
+  { name: "categoryId", label: "Kategori", type: "select", optionsUrl: "/api/options/job-categories" },
   { name: "description", label: "Deskripsi", type: "textarea" },
   { name: "image", label: "URL Gambar", type: "text" },
   { name: "salaryRange", label: "Rentang Gaji", type: "text" },
