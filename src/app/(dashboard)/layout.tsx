@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { DashboardShell } from "@/components/layout/dashboard/dashboard-shell";
 import { getUserPermissions, getRoleById } from "@/lib/rbac";
-import { ROLE_SLUGS } from "@/lib/permissions";
+
+const STAFF_ROLES = ["super_admin", "admin", "staff", "instructor"];
 
 export default async function DashboardLayout({
   children,
@@ -17,19 +18,18 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const permissions = await getUserPermissions(user.roleId);
-
-  let roleLabel: string | null = null;
-  if (user.roleId) {
-    const role = await getRoleById(user.roleId);
-    roleLabel = role?.name ?? null;
+  const role = user.roleId ? await getRoleById(user.roleId) : null;
+  if (!role || !STAFF_ROLES.includes(role.slug)) {
+    redirect("/apply/mine");
   }
+
+  const permissions = await getUserPermissions(user.roleId);
 
   return (
     <DashboardShell
       user={user}
       permissions={permissions}
-      roleLabel={roleLabel}
+      roleLabel={role.name}
     >
       {children}
     </DashboardShell>
