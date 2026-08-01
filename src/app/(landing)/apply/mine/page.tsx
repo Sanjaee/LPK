@@ -65,8 +65,8 @@ export default async function MyApplicationsPage() {
 
   return (
     <>
-      <Header isLoggedIn={!!session?.user} />
-      <main className="flex-1 container max-w-4xl py-12">
+      <Header isLoggedIn={!!session?.user} user={session?.user} />
+      <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Pendaftaran Saya</h1>
           <p className="text-muted-foreground">Lacak status pendaftaran pekerja migran Anda</p>
@@ -128,3 +128,4 @@ export default async function MyApplicationsPage() {
     </>
   );
 }
+

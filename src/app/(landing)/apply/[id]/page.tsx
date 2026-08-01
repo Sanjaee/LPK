@@ -63,8 +63,8 @@ export default async function ApplicantDetailPage({
 
   return (
     <>
-      <Header isLoggedIn={!!session?.user} />
-      <main className="flex-1 container max-w-4xl py-12">
+      <Header isLoggedIn={!!session?.user} user={session?.user} />
+      <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-12">
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2">

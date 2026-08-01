@@ -20,7 +20,7 @@ export default async function ApplicantRegisterPage() {
 
   return (
     <>
-      <Header isLoggedIn={!!session?.user} />
+      <Header isLoggedIn={!!session?.user} user={session?.user} />
       <main className="flex-1 bg-muted/30 flex flex-col items-center justify-center p-4 py-12">
         <div className="w-full max-w-2xl">
           <ApplicantMultiStepForm programs={programsList} />
@@ -31,3 +31,4 @@ export default async function ApplicantRegisterPage() {
     </>
   );
 }
+

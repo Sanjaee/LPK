@@ -40,7 +40,7 @@ export default async function ProgramPage({
   if (!program) {
     return (
       <>
-        <Header isLoggedIn={!!session?.user} />
+        <Header isLoggedIn={!!session?.user} user={session?.user} />
         <Section>
           <SectionHeader title="Program tidak ditemukan" />
         </Section>
@@ -52,7 +52,7 @@ export default async function ProgramPage({
 
   return (
     <>
-      <Header isLoggedIn={!!session?.user} />
+      <Header isLoggedIn={!!session?.user} user={session?.user} />
       <main className="flex-1">
         <Section>
           <Container>

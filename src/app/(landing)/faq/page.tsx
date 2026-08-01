@@ -16,7 +16,7 @@ export default async function FaqPage() {
 
   return (
     <>
-      <Header isLoggedIn={!!session?.user} />
+      <Header isLoggedIn={!!session?.user} user={session?.user} />
       <main className="flex-1">
         <Section>
           <SectionHeader
@@ -35,3 +35,4 @@ export default async function FaqPage() {
     </>
   );
 }
+

@@ -23,7 +23,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
+      <Header isLoggedIn={isLoggedIn} user={session?.user} />
 
       <main className="flex-1">
         <Hero isLoggedIn={isLoggedIn} />

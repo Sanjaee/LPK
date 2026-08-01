@@ -40,7 +40,7 @@ export default async function NewsPage({
   if (!news) {
     return (
       <>
-        <Header isLoggedIn={!!session?.user} />
+        <Header isLoggedIn={!!session?.user} user={session?.user} />
         <Section>
           <SectionHeader title="Berita tidak ditemukan" />
         </Section>
@@ -52,7 +52,7 @@ export default async function NewsPage({
 
   return (
     <>
-      <Header isLoggedIn={!!session?.user} />
+      <Header isLoggedIn={!!session?.user} user={session?.user} />
       <main className="flex-1">
         <Section>
           <Container>

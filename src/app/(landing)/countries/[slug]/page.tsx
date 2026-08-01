@@ -37,7 +37,7 @@ export default async function CountryPage({
   if (!country) {
     return (
       <>
-        <Header isLoggedIn={!!session?.user} />
+        <Header isLoggedIn={!!session?.user} user={session?.user} />
         <main className="flex-1">
           <Section>
             <SectionHeader title="Negara tidak ditemukan" />
@@ -58,7 +58,7 @@ export default async function CountryPage({
 
   return (
     <>
-      <Header isLoggedIn={!!session?.user} />
+      <Header isLoggedIn={!!session?.user} user={session?.user} />
       <main className="flex-1">
         <Section className="pt-8">
           <Container>

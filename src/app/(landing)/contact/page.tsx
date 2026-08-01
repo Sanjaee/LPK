@@ -13,7 +13,7 @@ export default async function ContactPage() {
   const session = await auth();
   return (
     <>
-      <Header isLoggedIn={!!session?.user} />
+      <Header isLoggedIn={!!session?.user} user={session?.user} />
       <main className="flex-1 flex flex-col">
         <Section className="pt-16 md:pt-20">
           <SectionHeader
@@ -28,3 +28,4 @@ export default async function ContactPage() {
     </>
   );
 }
+
