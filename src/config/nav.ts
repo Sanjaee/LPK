@@ -5,7 +5,9 @@ import {
   LayoutDashboard,
   MessageSquare,
   Newspaper,
+  ScrollText,
   Settings,
+  ShieldCheck,
   Users,
   UserRound,
   BarChart3,
@@ -73,6 +75,12 @@ export const dashboardNav: NavSection[] = [
         icon: UserRound,
         permissions: ["user.view"],
       },
+      {
+        title: "Role & Izin",
+        href: "/dashboard/roles",
+        icon: ShieldCheck,
+        permissions: ["role.view"],
+      },
     ],
   },
   {
@@ -95,6 +103,12 @@ export const dashboardNav: NavSection[] = [
   {
     title: "Sistem",
     items: [
+      {
+        title: "Log Aktivitas",
+        href: "/dashboard/logs",
+        icon: ScrollText,
+        permissions: ["settings.update"],
+      },
       {
         title: "Pengaturan",
         href: "/dashboard/settings",
