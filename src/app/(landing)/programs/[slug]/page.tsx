@@ -8,19 +8,12 @@ import { Section, SectionHeader, Container } from "@/components/landing/ui";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
-import { getProgramBySlug, getLandingData } from "@/lib/services/landing";
+import { getProgramBySlug } from "@/lib/services/landing";
 import { formatIDR } from "@/lib/format";
 import { IMAGES } from "@/lib/images";
 import { db } from "@/db";
 import { jobCategories } from "@/db/schema";
 import { eq } from "drizzle-orm";
-
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  const data = await getLandingData();
-  return data.programs.map((p) => ({ slug: p.slug }));
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

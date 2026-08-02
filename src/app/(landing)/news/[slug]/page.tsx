@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Calendar } from "lucide-react";
@@ -8,16 +9,9 @@ import { Section, SectionHeader, Container } from "@/components/landing/ui";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
-import { getLandingData, getNewsBySlug } from "@/lib/services/landing";
+import { getNewsBySlug } from "@/lib/services/landing";
 import { formatDate } from "@/lib/format";
 import { IMAGES } from "@/lib/images";
-
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  const data = await getLandingData();
-  return data.news.map((n) => ({ slug: n.slug }));
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
