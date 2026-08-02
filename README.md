@@ -35,12 +35,15 @@ npm run db:seed:content
 npm run dev            # pengembangan (http://localhost:3000)
 ```
 
-### Produksi (standalone)
+### Produksi (Vercel)
 
-```bash
-npm run build          # menghasilkan .next/standalone + menyalin static/public
-npm start              # node start.js (memuat .env/.env.local)
-```
+1. Push repo ke GitHub, lalu import ke [Vercel](https://vercel.com/new).
+2. Atur environment variables di **Vercel → Project → Settings → Environment Variables**:
+   - `DATABASE_URL` — koneksi PostgreSQL/Neon
+   - `AUTH_SECRET` — secret NextAuth (bisa generate via `npx auth secret`)
+3. Deploy. Vercel otomatis menjalankan `next build` setiap push ke `main`.
+
+> Catatan: build Vercel melakukan prerender halaman landing yang membaca database, jadi `DATABASE_URL` harus sudah diatur sebelum build pertama.
 
 ## Akun default
 
@@ -51,15 +54,9 @@ npm start              # node start.js (memuat .env/.env.local)
 | Script | Fungsi |
 |--------|--------|
 | `npm run dev` | Server pengembangan |
-| `npm run build` | Build produksi (standalone) |
-| `npm start` | Menjalankan server standalone |
+| `npm run build` | Build produksi |
+| `npm start` | Menjalankan server produksi |
 | `npm run lint` | ESLint |
 | `npm run db:push` | Sinkronkan skema Drizzle ke DB |
 | `npm run db:seed` | Seed role/permission/user admin |
 | `npm run db:seed:content` | Seed konten demo |
-
-## Docker
-
-```bash
-docker compose up --build   # web di :3000 (butuh DATABASE_URL & AUTH_SECRET di env)
-```
