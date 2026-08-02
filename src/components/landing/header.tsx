@@ -79,6 +79,10 @@ export function Header({ isLoggedIn, user }: HeaderProps) {
         <div className="flex items-center gap-1.5">
           <ThemeToggle />
 
+          <Button size="sm" render={<Link href="/apply" />}>
+            Daftar Kerja
+          </Button>
+
           {isLoggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -130,14 +134,9 @@ export function Header({ isLoggedIn, user }: HeaderProps) {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <>
-              <Button size="sm" variant="ghost" render={<Link href="/login" />}>
-                Masuk
-              </Button>
-              <Button size="sm" render={<Link href="/apply" />}>
-                Daftar Kerja
-              </Button>
-            </>
+            <Button size="sm" variant="ghost" render={<Link href="/login" />}>
+              Masuk
+            </Button>
           )}
 
           <Button
@@ -171,6 +170,13 @@ export function Header({ isLoggedIn, user }: HeaderProps) {
             <div className="mt-2 border-t pt-2">
               {isLoggedIn ? (
                 <>
+                  <Link
+                    href="/apply"
+                    className="block rounded-md px-3 py-2 text-sm font-medium text-primary"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Daftar Kerja
+                  </Link>
                   <Link
                     href="/dashboard"
                     className="block rounded-md px-3 py-2 text-sm hover:bg-muted"
